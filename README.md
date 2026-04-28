@@ -3,9 +3,6 @@
 My personal Arch Linux setup built around Hyprland. Took a while to get everything working the way I wanted, but here it is.
 
 ## what's in here
-## preview
-
-![setup](screenshot-20260428-234600.png)
 
 - **Window Manager** — Hyprland
 - **Bar** — Waybar
@@ -16,6 +13,9 @@ My personal Arch Linux setup built around Hyprland. Took a while to get everythi
 - **Fetch** — Fastfetch
 - **Theme** — Catppuccin Mocha
 - **Font** — JetBrains Mono Nerd Font
+- ## preview
+
+![setup](screenshot-20260428-234600.png)
 
 ## installation
 
