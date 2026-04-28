@@ -1,0 +1,69 @@
+* {
+    bg: #1e1e2e;
+    bg-alt: #313244;
+    fg: #cdd6f4;
+    fg-alt: #6c7086;
+    accent: #cba6f7;
+    urgent: #f38ba8;
+
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    background-color: @bg;
+    border: 2px;
+    border-color: @accent;
+    border-radius: 12px;
+    width: 500px;
+}
+
+mainbox {
+    padding: 10px;
+}
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    children: [prompt, entry];
+}
+
+prompt {
+    color: @accent;
+    margin-right: 8px;
+}
+
+entry {
+    color: @fg;
+}
+
+listview {
+    lines: 8;
+    scrollbar: false;
+}
+
+element {
+    padding: 8px 12px;
+    border-radius: 8px;
+    spacing: 10px;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: @fg;
+}
+
+element selected.normal {
+    background-color: @bg-alt;
+    text-color: @accent;
+}
+
+element-icon {
+    size: 24px;
+}
+
+element-text {
+    color: inherit;
+}

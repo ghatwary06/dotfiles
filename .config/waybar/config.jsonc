@@ -1,0 +1,74 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 35,
+    "margin-top": 6,
+    "margin-left": 10,
+    "margin-right": 10,
+    "spacing": 4,
+
+    "modules-left": [
+        "custom/os",
+        "hyprland/workspaces"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "pulseaudio",
+        "network",
+        "battery",
+        "tray"
+    ],
+
+    "custom/os": {
+        "format": " 󰣇 ",
+        "tooltip": false,
+        "on-click": "rofi -show drun"
+    },
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "persistent-workspaces": {
+            "eDP-1": [1, 2, 3, 4, 5],
+            "HDMI-A-1": [6, 7, 8, 9, 10]
+        }
+    },
+    "clock": {
+        "format": "[ 󰥔 {:%I:%M %p} ]",
+        "format-alt": "[ 󰃭 {:%a, %b %d %Y} ]",
+        "tooltip": false
+    },
+    "pulseaudio": {
+        "format": "[ {icon} {volume}% ]",
+        "format-muted": "[  muted ]",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "pavucontrol",
+        "tooltip": false
+    },
+    "network": {
+        "format-wifi": "[ 󰤨 {essid} ]",
+        "format-ethernet": "[ 󰈀 Ethernet ]",
+        "format-disconnected": "[ 󰤭 No Network ]",
+        "on-click": "nm-connection-editor",
+        "tooltip": false
+    },
+    "battery": {
+        "format": "[ {icon} {capacity}% ]",
+        "format-charging": "[ 󰂄 {capacity}% ]",
+        "format-full": "[ 󰁹 Full ]",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "interval": 30,
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "tooltip": false
+    },
+    "tray": {
+        "spacing": 8,
+        "tooltip": false
+    }
+}
