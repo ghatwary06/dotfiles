@@ -16,6 +16,7 @@
     ],
     "modules-right": [
         "pulseaudio",
+        "bluetooth",
         "network",
         "battery",
         "tray"
@@ -30,8 +31,8 @@
         "format": "{name}",
         "on-click": "activate",
         "persistent-workspaces": {
-            "eDP-1": [1, 2, 3, 4, 5],
-            "HDMI-A-1": [6, 7, 8, 9, 10]
+            "HDMI-A-1": [1, 2, 3, 4, 5],
+            "eDP-1": [6, 7, 8, 9, 10]
         }
     },
     "clock": {
@@ -45,14 +46,27 @@
         "format-icons": {
             "default": ["󰕿", "󰖀", "󰕾"]
         },
-        "on-click": "pavucontrol",
+        "on-click": "flatpak run com.saivert.pwvucontrol",
+        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
         "tooltip": false
+    },
+    "bluetooth": {
+        "format": "[ 󰂯 ]",
+        "format-disabled": "[ 󰂲 ]",
+        "format-off": "[ 󰂲 ]",
+        "format-connected": "[ 󰂱 {num_connections} ]",
+        "tooltip-format": "{controller_alias}\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "flatpak run io.github.ebonjaeger.bluejay"
     },
     "network": {
         "format-wifi": "[ 󰤨 {essid} ]",
         "format-ethernet": "[ 󰈀 Ethernet ]",
         "format-disconnected": "[ 󰤭 No Network ]",
-        "on-click": "nm-connection-editor",
+        "on-click": "/home/mazenghatwary/.config/rofi/wifi-menu.sh",
         "tooltip": false
     },
     "battery": {
