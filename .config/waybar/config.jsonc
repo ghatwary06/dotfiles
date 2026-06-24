@@ -22,7 +22,7 @@
     ],
 
     "custom/os": {
-        "format": " 󰣇 ",
+        "format": " 󰣛 ",
         "tooltip": false,
         "on-click": "rofi -show drun"
     },

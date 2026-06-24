@@ -1,0 +1,14 @@
+{
+    "background": {
+        "enabled": false
+    },
+    "general": {
+        "idle": {
+            "lockBeforeSleep": false,
+            "timeouts": []
+        }
+    },
+    "paths": {
+        "wallpaperDir": "~/Pictures/catppuccin-wallpapers"
+    }
+}
