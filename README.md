@@ -17,13 +17,11 @@ in here is a hand-written Quickshell shell, not a theme drop.
 | | |
 |---|---|
 | **Compositor** | Hyprland — configured in **Lua**, not `.conf` |
-| **Second compositor** | niri (scrollable tiling, same keybinds) |
 | **Bar** | Waybar |
 | **Shell / panel** | Quickshell (QML) — side panel, taskbar strip, dashboard, notifications |
 | **Terminal** | Kitty |
 | **Shell** | fish |
 | **Launcher / menus** | Rofi |
-| **Notifications** | Quickshell |
 | **Editor** | Neovim (LazyVim) |
 | **Fetch** | Fastfetch |
 | **Theme** | Nord — accent `nord8` `#88C0D0` |
