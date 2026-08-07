@@ -1,0 +1,17 @@
+[Unit]
+Description=EasyEffects audio processing (service mode)
+After=pipewire.service pipewire-pulse.service wireplumber.service
+Wants=pipewire.service wireplumber.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/easyeffects --service-mode
+# Re-apply the speaker preset a moment after the service is up, so it is
+# active every login regardless of last-preset restore behaviour.
+ExecStartPost=/bin/sh -c 'sleep 3; /usr/bin/easyeffects -l "Movies & Voice"'
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

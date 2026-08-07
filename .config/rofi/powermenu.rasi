@@ -1,0 +1,106 @@
+/* ===========================================================================
+   Power menu theme — "muted terminal"
+   Mirrors ~/.config/waybar/colors.css. Standalone on purpose: the launcher
+   keeps using theme.rasi, so nothing else changes appearance.
+   =========================================================================== */
+
+* {
+    bg0:     #2E3440f2;
+    bg1:     #3B4252ff;
+    bg2:     #434C5Eff;
+    bdr:     #4C566Aff;
+    fg:      #D8DEE9ff;
+    fgdim:   #616E88ff;
+    acc:     #88C0D0ff;
+    crit:    #BF616Aff;
+    transparent: #00000000;
+
+    background-color: transparent;
+    text-color:       @fg;
+    font:             "JetBrainsMono Nerd Font 12";
+}
+
+window {
+    location:         center;
+    anchor:           center;
+    width:            300px;
+    padding:          0px;
+    border:           1px;
+    border-color:     @bdr;
+    border-radius:    6px;
+    background-color: @bg0;
+}
+
+mainbox {
+    padding:  14px;
+    spacing:  10px;
+    children: [ inputbar, listview ];
+}
+
+/* Prompt only — the menu is navigated with the keyboard or the mouse, there is
+   nothing to type, so the entry itself stays hidden. */
+inputbar {
+    enabled:  true;
+    children: [ prompt ];
+    padding:  0px 2px 8px 2px;
+    border:   0px 0px 1px 0px;
+    border-color: @bdr;
+}
+
+prompt {
+    text-color: @fgdim;
+    font:       "JetBrainsMono Nerd Font 10";
+}
+
+entry {
+    enabled: false;
+}
+
+listview {
+    lines:        5;
+    columns:      1;
+    fixed-height: true;
+    scrollbar:    false;
+    spacing:      2px;
+    padding:      0px;
+}
+
+element {
+    padding:       8px 10px;
+    spacing:       12px;
+    border-radius: 4px;
+    text-color:    @fgdim;
+    cursor:        pointer;
+}
+
+element normal.normal {
+    background-color: transparent;
+}
+
+element selected.normal {
+    background-color: #88C0D01c;
+    text-color:       @acc;
+    border:           1px;
+    border-color:     #88C0D073;
+}
+
+element alternate.normal {
+    background-color: transparent;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+    horizontal-align: 0.0;
+}
+
+message {
+    padding: 0px;
+}
+
+textbox {
+    text-color: @fgdim;
+    font:       "JetBrainsMono Nerd Font 10";
+    padding:    6px 2px 0px 2px;
+}

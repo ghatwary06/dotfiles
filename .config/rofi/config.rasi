@@ -2,10 +2,13 @@ configuration {
     modi: "drun,run";
     show-icons: true;
     icon-theme: "Papirus-Dark";
-    font: "JetBrainsMono Nerd Font 13";
+    font: "JetBrainsMono Nerd Font 12";
     drun-display-format: "{name}";
-    display-drun: "  Apps";
-    display-run: "  Run";
+    display-drun: "󰏕  apps";
+    display-run: "󰐖  run";
+    /* Glyphs are Material-Design plane (U+F0000+). The previous config used
+       Private-Use-Area icons, which had already been silently stripped to
+       empty strings — the prompts were rendering as bare spaces. */
 }
 
 @theme "~/.config/rofi/theme.rasi"

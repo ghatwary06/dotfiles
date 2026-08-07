@@ -1,0 +1,69 @@
+/* ===========================================================================
+   Shared palette — Nord
+   Single source of truth for waybar. The Quickshell side panel mirrors these
+   exact values in ~/.config/quickshell/panel/Theme.qml — change both together.
+
+   bg0    #2E3440   base surface (bar / panel background)
+   bg1    #3B4252   raised surface (buttons, cards)
+   bg2    #434C5E   hover / progress track
+   bdr    #4C566A   hairline border
+   fg     #D8DEE9   primary text
+   fgdim  #616E88   muted text / inactive
+   fgfaint #4C566A  furthest-back text (empty workspaces, off states)
+   acc    #88C0D0   THE accent — nord8 frost cyan
+   ok     #A3BE8C
+   warn   #EBCB8B
+   crit   #BF616A
+   =========================================================================== */
+
+@define-color bg0    #2E3440;
+@define-color bg1    #3B4252;
+@define-color bg2    #434C5E;
+@define-color bdr    #4C566A;
+
+/* --- raised-surface set -----------------------------------------------------
+   Added because the bar went flat over light wallpapers. Two causes, both fixed
+   here rather than in style.css so the values stay in one place:
+
+   1. The bar leaned on blur for separation. `barbase` is a genuinely solid
+      near-black laid down UNDER the gradient, so the slab holds its shape
+      whatever is behind it.
+   2. Chips were rendering DARKER than the bar (measured: 39.5 vs 49.2
+      luminance), which reads as recessed holes, not raised surfaces. `chip` is
+      deliberately LIGHTER than the bar base and fully OPAQUE, so it stays put
+      whatever the wallpaper does.
+
+   Since the slab went glassy (0.70) it now tracks the wallpaper, so on a very
+   bright one it can out-brighten the fixed chip. `bdrhi` is therefore set
+   bright enough (lum ~80) to out-contrast the slab in BOTH directions — the
+   hairline, not the fill, is what guarantees the raised read.             */
+@define-color barbase #242933;
+@define-color chip    #3B4252;
+@define-color chiphi  #434C5E;
+@define-color bdrhi   #4C566A;
+@define-color fg     #D8DEE9;
+@define-color fgdim  #616E88;
+@define-color fgfaint #4C566A;
+@define-color acc    #88C0D0;
+@define-color accdim #5F8692;
+@define-color ok     #A3BE8C;
+@define-color warn   #EBCB8B;
+@define-color crit   #BF616A;
+
+/* --- per-module hues --------------------------------------------------------
+   The bar read as an all-grey slab. Each module now carries its own hue so the
+   eye can find things by colour instead of reading every label.
+
+   These are the SAME desaturated family as the app icons in the taskbar
+   (Apps.qml), so the whole bar looks like one palette rather than a rainbow.
+   Frost cyan (nord8) stays reserved for state/accent (active workspace, focus, clock,
+   weather glyph, "on" toggles) — these hues are identity, not state.        */
+@define-color m_cpu   #81A1C1;   /* nord9  blue   */
+@define-color m_ram   #B48EAD;   /* nord15 purple */
+@define-color m_gpu   #A3BE8C;   /* nord14 green  */
+@define-color m_net   #8FBCBB;   /* nord7  frost  */
+@define-color m_vol   #D08770;   /* nord12 orange */
+@define-color m_bat   #EBCB8B;   /* nord13 yellow */
+@define-color m_tog   #88C0D0;   /* nord8  accent */
+@define-color m_notif #5E81AC;   /* nord10 steel  */
+@define-color m_power #BF616A;   /* nord11 red    */

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# wallfetch — pull high-res wallpapers from wallhaven into ~/Pictures/Wallpapers
+#
+# Anime is excluded structurally, not by filtering filenames: wallhaven's
+# `categories` is a 3-bit flag for general/anime/people, and this always
+# sends 100 — General only. There is no way for an anime or people shot to
+# come back through that query.
+#
+#   wallfetch                 # 24 top wallpapers of the past year
+#   wallfetch 48              # 48 of them
+#   wallfetch 24 nature       # search term
+#   wallfetch 24 "" random    # random instead of toplist
+set -euo pipefail
+
+COUNT="${1:-24}"
+QUERY="${2:-}"
+SORT="${3:-toplist}"
+DEST="$HOME/Pictures/Wallpapers"
+
+mkdir -p "$DEST"
+
+API="https://wallhaven.cc/api/v1/search"
+# categories: general=1 anime=0 people=0   purity: sfw=1 sketchy=0 nsfw=0
+COMMON="categories=100&purity=100&atleast=1920x1080&sorting=${SORT}&order=desc&topRange=1y"
+[ -n "$QUERY" ] && COMMON="${COMMON}&q=$(printf '%s' "$QUERY" | sed 's/ /+/g')"
+
+echo "→ fetching $COUNT wallpapers (General only — no anime, no people)"
+[ -n "$QUERY" ] && echo "  query: $QUERY"
+
+got=0
+page=1
+while [ "$got" -lt "$COUNT" ] && [ "$page" -le 10 ]; do
+    urls=$(curl -fsSL "${API}?${COMMON}&page=${page}" | jq -r '.data[].path')
+    [ -z "$urls" ] && break
+
+    while IFS= read -r url; do
+        [ "$got" -ge "$COUNT" ] && break
+        name="${url##*/}"
+        if [ -f "$DEST/$name" ]; then
+            echo "  = $name (have it)"
+        elif curl -fsSL "$url" -o "$DEST/$name"; then
+            got=$((got + 1))
+            printf '  ✓ %-28s %s\n' "$name" "$(du -h "$DEST/$name" | cut -f1)"
+        else
+            rm -f "$DEST/$name"
+            echo "  ✗ $name"
+        fi
+    done <<< "$urls"
+
+    page=$((page + 1))
+done
+
+total=$(find "$DEST" -maxdepth 1 -type f \
+    \( -iname '*.jpg' -o -iname '*.png' -o -iname '*.jpeg' -o -iname '*.webp' \) | wc -l)
+echo "→ downloaded $got new · $total total in $DEST"
+echo "  point DMS at them:  qs -c dms ipc call wallpaper set \"\$(find $DEST -type f | shuf -n1)\""

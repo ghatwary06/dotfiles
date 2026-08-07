@@ -1,0 +1,15 @@
+[Unit]
+Description=Mirror Hyprland's runtime log to ~/hypr-last.log so it survives a hang
+# default.target, not graphical-session.target: a compositor that hangs during
+# startup never reaches graphical-session, and that is exactly the case we need
+# the log for.
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/hypr-log-capture
+Restart=always
+RestartSec=2
+Nice=10
+
+[Install]
+WantedBy=default.target

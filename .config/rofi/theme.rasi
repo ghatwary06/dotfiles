@@ -1,69 +1,153 @@
+/* ===========================================================================
+   rofi launcher — "muted terminal"
+   Mirrors ~/.config/waybar/colors.css. Shared by the drun/run launcher AND the
+   dmenu helpers (wifi-menu.sh, wallpaper-menu.sh), so nothing here assumes a
+   particular mode. The power menu keeps its own tighter powermenu.rasi.
+
+   Blurred by the `blur-rofi` layerrule in ~/.config/hypr/rice.conf, which is
+   why the window background carries alpha.
+   =========================================================================== */
+
 * {
-    bg: #1e1e2e;
-    bg-alt: #313244;
-    fg: #cdd6f4;
-    fg-alt: #6c7086;
-    accent: #cba6f7;
-    urgent: #f38ba8;
+    bg0:     #2E3440f2;
+    chip:    #3B4252ff;
+    chiphi:  #434C5Eff;
+    bdr:     #4C566Aff;
+    fg:      #D8DEE9ff;
+    fgdim:   #616E88ff;
+    fgfaint: #4C566Aff;
+    accent:  #88C0D0ff;
+    urgent:  #BF616Aff;
+    transparent: #00000000;
 
     background-color: transparent;
-    text-color: @fg;
+    text-color:       @fg;
+    font:             "JetBrainsMono Nerd Font 12";
 }
 
 window {
-    background-color: @bg;
-    border: 2px;
-    border-color: @accent;
-    border-radius: 12px;
-    width: 500px;
+    location:         center;
+    anchor:           center;
+    width:            620px;
+    padding:          0px;
+    border:           1px;
+    border-color:     @bdr;
+    border-radius:    8px;
+    background-color: @bg0;
 }
 
 mainbox {
-    padding: 10px;
+    padding:  14px;
+    spacing:  10px;
+    children: [ inputbar, message, listview ];
 }
 
+/* ------------------------------------------------------------- inputbar -- */
+
 inputbar {
-    background-color: @bg-alt;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    children: [prompt, entry];
+    background-color: @chip;
+    border:           1px;
+    border-color:     @bdr;
+    border-radius:    6px;
+    padding:          9px 12px;
+    spacing:          10px;
+    children:         [ prompt, entry ];
 }
 
 prompt {
-    color: @accent;
-    margin-right: 8px;
+    text-color:       @accent;
+    background-color: transparent;
+    vertical-align:   0.5;
 }
 
 entry {
-    color: @fg;
+    text-color:        @fg;
+    background-color:  transparent;
+    placeholder:       "search";
+    placeholder-color: @fgfaint;
+    vertical-align:    0.5;
+    cursor:            text;
 }
 
+/* ------------------------------------------------------------- listview -- */
+
 listview {
-    lines: 8;
-    scrollbar: false;
+    lines:        8;
+    columns:      1;
+    fixed-height: false;
+    scrollbar:    false;
+    spacing:      3px;
+    padding:      0px;
+    background-color: transparent;
 }
 
 element {
-    padding: 8px 12px;
-    border-radius: 8px;
-    spacing: 10px;
+    padding:       8px 10px;
+    spacing:       12px;
+    border-radius: 6px;
+    /* Reserve the left accent bar on EVERY row so selecting one doesn't shift
+       the text sideways by 2px. */
+    border:        0px 0px 0px 2px;
+    border-color:  transparent;
+    text-color:    @fgdim;
+    cursor:        pointer;
 }
 
-element normal.normal {
+element normal.normal,
+element alternate.normal {
     background-color: transparent;
-    text-color: @fg;
+}
+
+element normal.urgent,
+element alternate.urgent {
+    text-color: @urgent;
 }
 
 element selected.normal {
-    background-color: @bg-alt;
-    text-color: @accent;
+    background-color: #88C0D01f;
+    text-color:       @fg;
+    border:           0px 0px 0px 2px;
+    border-color:     @accent;
+}
+
+element selected.urgent {
+    background-color: #BF616A26;
+    text-color:       @urgent;
+    border-color:     @urgent;
 }
 
 element-icon {
-    size: 24px;
+    size:             26px;
+    background-color: transparent;
+    vertical-align:   0.5;
+    cursor:           inherit;
 }
 
 element-text {
-    color: inherit;
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+    cursor:           inherit;
+}
+
+/* -------------------------------------------------------------- message -- */
+
+message {
+    padding: 0px;
+}
+
+textbox {
+    background-color: @chip;
+    border:           1px;
+    border-color:     @bdr;
+    border-radius:    6px;
+    padding:          8px 10px;
+    text-color:       @fgdim;
+}
+
+error-message {
+    padding:          14px;
+    border-radius:    6px;
+    background-color: @bg0;
+    text-color:       @urgent;
 }

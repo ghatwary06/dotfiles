@@ -1,104 +1,429 @@
+/* ===========================================================================
+   waybar — "muted terminal"
+   Palette: colors.css   ·   Blur comes from Hyprland layerrules (see rice.conf)
+
+   Structure: the bar is a dark slab; every functional group sits on it as a
+   raised "chip" with a hairline border. That segmentation is what gives the
+   bar its shape — flat text on a flat slab reads as unthemed.
+
+   COLOUR MODEL (two independent axes — this is the bit to keep straight):
+     · HUE = identity. Each module owns a colour from the @m_* set in
+       colors.css, drawn from the same desaturated family as the taskbar app
+       icons, so you find things by colour instead of reading every label.
+     · AMBER (@acc) = state. Active workspace, focused window, "on" toggles,
+       the clock, the weather glyph. Amber is never used for identity, so when
+       something turns amber it always means something.
+     · warn/crit override both — a spiking CPU or a dying battery must be able
+       to shout over its own identity colour.
+   =========================================================================== */
+
+@import "colors.css";
+
 * {
-    font-family: "JetBrainsMono Nerd Font";
-    font-size: 13px;
+    font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
+    font-size: 12.5px;
+    font-weight: 500;
     border: none;
     border-radius: 0;
     min-height: 0;
+    box-shadow: none;
+    text-shadow: none;
 }
 
 window#waybar {
-    background: rgba(30, 30, 46, 0.90);
-    border-radius: 12px;
-    color: #cdd6f4;
+    /* TWO stacked layers (GTK paints the first listed on top):
+         1. the gradient — the "light from above" shaping, semi-transparent
+         2. @barbase at 0.62 — a genuinely SOLID floor
+       Blur still adds depth, but it is no longer the only thing separating the
+       bar from the wallpaper.
+
+       Alphas compound (gradient over base):
+         top    1-(1-0.40)(1-0.50) = 0.70
+         bottom 1-(1-0.32)(1-0.50) = 0.66
+       Clearly glassy (was 0.92), but NOT lower than this on purpose. A
+       translucent slab tracks the wallpaper, while the chips are opaque and
+       fixed — push the slab much past this and over a bright wallpaper the
+       slab becomes LIGHTER than the chips, which flips them back into looking
+       like recessed holes. Measured at 0.65/opaque-0.82 chips: chip sat 10.7
+       BELOW the slab on a light sky. 0.70 + the lighter @chip below keeps the
+       chips on top in both directions. */
+    background:
+        linear-gradient(180deg,
+                        alpha(#3B4252, 0.40) 0%,
+                        alpha(@barbase, 0.32) 100%),
+        alpha(@barbase, 0.50);
+    border: 1px solid @bdrhi;
+    border-radius: 7px;
+    color: @fg;
 }
+
+window#waybar.hidden {
+    opacity: 0.0;
+}
+
+/* ---------------------------------------------------------------- chips -- */
+/* Shared chip treatment. Applied per-id (GTK CSS has no @extend). */
+
+#custom-sysglance,
+#custom-net,
+#pulseaudio,
+#toggles,
+#battery,
+#custom-weather,
+#language,
+#tray,
+#session,
+#center {
+    /* LIGHTER than the bar — that inversion is what makes these read as
+       raised (they were once translucent @bg1, which composited DARKER than
+       the slab and looked like holes punched in it).
+       Kept fully OPAQUE deliberately: a translucent chip picks up the
+       wallpaper just like the slab does, so the two move together and the
+       contrast between them collapses. Opaque means the chip is a constant
+       whatever is behind the bar. */
+    background: @chip;
+    border: 1px solid @bdrhi;
+    border-radius: 5px;
+    margin: 4px 2px;
+    padding: 0 10px;
+    color: @fgdim;
+}
+
+/* ------------------------------------------------------------------- os -- */
 
 #custom-os {
-    color: #cba6f7;
-    font-size: 20px;
-    padding: 0 12px;
-    margin: 2px;
+    background-image: url("/home/mazen/.config/waybar/assets/cachyos.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px 16px;
+    min-width: 16px;
+    padding: 0 13px;
+    margin: 4px 3px 4px 5px;
+    border-radius: 5px;
+    border: 1px solid transparent;
 }
 
-#workspaces button {
+#custom-os:hover {
+    background-color: alpha(@acc, 0.14);
+    border: 1px solid alpha(@acc, 0.4);
+}
+
+/* --------------------------------------------------------- taskbar note -- */
+/* Workspace pills AND the running-apps taskbar are now rendered by Quickshell
+   (BarStrip.qml), not waybar — they have to sit flush against each other and
+   the pill cluster is a dynamic width, which is not something waybar can hand
+   off to a second surface. waybar keeps the os button, centre and right. */
+
+/* --------------------------------------------------- centre: wx + media -- */
+
+#center {
+    padding: 0 4px;
+}
+
+/* The weather GLYPH is wrapped in an accent <span> by weather.sh — colouring
+   the whole module here would tint the temperature too, and the point is a
+   single accented icon next to plain text. */
+#custom-weather {
+    /* Moved from the centre to the right bar (the clock took its old slot), so
+       it is now a chip in its own right — see the chip block above. */
     padding: 0 10px;
-    color: #6c7086;
-    background: transparent;
-    border-radius: 8px;
-    margin: 4px 2px;
+    color: @fg;
+    font-weight: 600;
 }
 
-#workspaces button.active {
-    color: #cba6f7;
-    background: rgba(203, 166, 247, 0.2);
-    border-bottom: 2px solid #cba6f7;
+#custom-weather:hover {
+    color: @acc;
 }
 
-#workspaces button.occupied {
-    color: #89b4fa;
+#custom-weather.hot {
+    color: @warn;
 }
 
-#workspaces button:hover {
-    color: #cdd6f4;
-    background: rgba(205, 214, 244, 0.1);
+#custom-weather.cold {
+    color: #81A1C1;   /* nord9 */
 }
 
-#clock {
-    color: #89b4fa;
-    padding: 0 10px;
+#custom-weather.offline {
+    color: @fgfaint;
 }
+
+#language {
+    padding: 0 9px;
+    color: @fgdim;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+/* Arabic gets the accent so a glance is enough to tell you are NOT in English —
+   that is the whole point of the indicator. */
+#language.ar,
+#language.ara {
+    color: @acc;
+}
+
+#language:hover {
+    color: @fg;
+}
+
+#custom-media-sep {
+    color: @bdr;
+    padding: 0 4px;
+}
+
+#custom-media-prev,
+#custom-media-next {
+    padding: 0 6px;
+    font-size: 14px;
+    color: @fgdim;
+}
+
+#custom-media-prev:hover,
+#custom-media-next:hover {
+    color: @acc;
+}
+
+#mpris {
+    color: @fg;
+    padding: 0 6px;
+}
+
+#mpris:hover {
+    color: @acc;
+}
+
+#mpris.paused,
+#mpris.stopped {
+    color: @fgdim;
+}
+
+/* With nothing playing, mpris and its three companions emit no text and waybar
+   collapses them, leaving just the weather in the centre chip.
+   (GTK CSS has no :empty pseudo-class — waybar treats a CSS parse error as
+   fatal, so don't reach for it.) */
+
+/* ------------------------------------------------------------ sysglance -- */
+
+/* Text colour is set per-metric by sysglance.sh (Pango spans), so CPU/RAM/GPU
+   each carry their own hue and go amber/red independently when they spike. */
+#custom-sysglance {
+    font-size: 11.5px;
+    letter-spacing: -0.2px;
+}
+
+#custom-sysglance:hover {
+    background: alpha(@acc, 0.12);
+    border-color: alpha(@acc, 0.4);
+    color: @fg;
+}
+
+#custom-sysglance.high {
+    color: @warn;
+    border-color: alpha(@warn, 0.45);
+}
+
+/* ----------------------------------------------------------- pulseaudio -- */
 
 #pulseaudio {
-    color: #a6e3a1;
-    padding: 0 10px;
+    color: @m_vol;
+}
+
+#pulseaudio:hover {
+    color: @fg;
+    border-color: alpha(@acc, 0.4);
 }
 
 #pulseaudio.muted {
-    color: #6c7086;
+    color: @fgfaint;
 }
 
-#bluetooth {
-    color: #b4befe;
-    padding: 0 10px;
+/* --------------------------------------------------------- toggle group -- */
+
+/* These were previously inside a `drawer` group that revealed on hover. The
+   revealed children NEVER received input — no hover state, no pointer cursor,
+   clicks did nothing (verified by parking the cursor on the wifi icon and
+   diffing the pixels). Always-visible buttons are both clickable and
+   discoverable, which is worth the few extra pixels. */
+#toggles {
+    padding: 0 3px;
 }
 
-#bluetooth.disabled,
-#bluetooth.off {
-    color: #6c7086;
+#custom-wifi,
+#custom-bt,
+#custom-dnd,
+#custom-night {
+    padding: 0 7px;
+    /* Horizontal only. These sit INSIDE the #toggles chip, which already has
+       `margin: 4px 2px` — adding vertical margin here stacks with it and
+       pushes waybar's required height to 37, breaking alignment with the
+       34px Quickshell strip. */
+    margin: 0 1px;
+    color: @fgfaint;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: background-color 130ms ease, color 130ms ease;
 }
 
-#bluetooth.connected {
-    color: #89b4fa;
+/* ON carries the toggle's own hue; OFF recedes to faint. Colour itself is the
+   state signal, so these read at a glance without labels. */
+#custom-wifi.on {
+    color: @m_net;
 }
 
-#network {
-    color: #89dceb;
-    padding: 0 10px;
+#custom-bt.on {
+    color: @m_notif;
 }
 
+#custom-dnd.on {
+    color: @acc;
+}
+
+#custom-night.on {
+    color: @m_vol;
+}
+
+#custom-wifi.airplane,
+#custom-net.airplane {
+    color: @warn;
+}
+
+#custom-wifi:hover,
+#custom-bt:hover,
+#custom-dnd:hover,
+#custom-night:hover {
+    background: @chiphi;
+    border-color: @bdrhi;
+    color: @fg;
+}
+
+/* --------------------------------------------------------- battery/clock -- */
+
+/* State-reactive battery. Thresholds live in config.jsonc:
+   warning = 20%, critical = 10%. Charging always wins over both — a charging
+   battery at 8% is not an emergency and shouldn't scream red. */
 #battery {
-    color: #a6e3a1;
-    padding: 0 10px;
-}
-
-#battery.warning {
-    color: #f9e2af;
-}
-
-#battery.critical {
-    color: #f38ba8;
+    color: @m_bat;
 }
 
 #battery.charging {
-    color: #a6e3a1;
+    color: @ok;
+    border-color: alpha(@ok, 0.4);
 }
+
+#battery.warning:not(.charging) {
+    color: @warn;
+    border-color: alpha(@warn, 0.5);
+    background: shade(@chip, 1.05);
+}
+
+#battery.critical:not(.charging) {
+    color: @crit;
+    border-color: alpha(@crit, 0.65);
+    background: alpha(@crit, 0.18);
+}
+
+/* ---------------------------------------------------------------- network -- */
+
+#custom-net {
+    color: @m_net;
+}
+
+#custom-net.wifi,
+#custom-net.ethernet {
+    color: @m_net;
+}
+
+/* Disconnected reads as recessed and drained rather than alarming — losing
+   wifi is a state, not an error. */
+#custom-net.disconnected {
+    color: @fgfaint;
+    background: shade(@chip, 0.88);
+    border-color: @bdr;
+}
+
+#custom-net.airplane {
+    color: @warn;
+    border-color: alpha(@warn, 0.45);
+}
+
+#custom-net:hover {
+    color: @acc;
+    border-color: alpha(@acc, 0.45);
+}
+
+#clock {
+    color: @acc;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 0 12px;
+}
+
+#clock:hover {
+    background: alpha(@acc, 0.14);
+    border-color: alpha(@acc, 0.45);
+}
+
+/* ------------------------------------------------------------------ tray -- */
 
 #tray {
-    padding: 0 10px;
+    padding: 0 8px;
 }
 
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* -------------------------------------------------------------- session -- */
+
+#session {
+    padding: 0 2px;
+    margin-right: 5px;
+}
+
+#custom-notif {
+    padding: 0 8px;
+    color: @m_notif;
+    border-radius: 4px;
+}
+
+#custom-notif.unread {
+    color: @acc;
+}
+
+#custom-notif.dnd {
+    color: @fgfaint;
+}
+
+#custom-notif:hover {
+    background: @chiphi;
+    color: @fg;
+}
+
+#custom-power {
+    padding: 0 9px;
+    color: @m_power;
+    border-radius: 4px;
+}
+
+#custom-power:hover {
+    background: alpha(@crit, 0.2);
+    color: @crit;
+}
+
+/* --------------------------------------------------------------- tooltip -- */
+
 tooltip {
-    background: #1e1e2e;
-    border: 1px solid #313244;
-    border-radius: 8px;
-    color: #cdd6f4;
+    background: @bg0;
+    border: 1px solid @bdr;
+    border-radius: 6px;
+}
+
+tooltip label {
+    color: @fg;
+    padding: 3px;
+    font-size: 12px;
 }

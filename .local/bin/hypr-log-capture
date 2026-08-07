@@ -1,0 +1,27 @@
+#!/bin/bash
+# Mirror Hyprland's runtime log to disk once a second.
+#
+# Hyprland logs to $XDG_RUNTIME_DIR/hypr/<sig>/hyprland.log, which lives on
+# tmpfs. If Hyprland HANGS holding DRM master, both screens go black AND VT
+# switching stops working (logind can't switch until the compositor releases
+# the GPUs), so the only way out is the power button -- which wipes tmpfs and
+# destroys the one file that would explain the hang.
+#
+# This keeps a copy on real disk. Started by the systemd user manager at login,
+# so it is already running before Hyprland gets far enough to wedge.
+
+DEST="$HOME/hypr-last.log"
+RUNTIME="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
+while :; do
+    # newest session dir; Hyprland makes a fresh random <sig> each start
+    log=$(ls -t "$RUNTIME"/hypr/*/hyprland.log 2>/dev/null | head -1)
+    if [[ -n $log && -r $log ]]; then
+        cp -- "$log" "$DEST.tmp" 2>/dev/null &&
+            mv -- "$DEST.tmp" "$DEST" &&
+            # fsync just this file -- a hang means an unclean-ish exit, and an
+            # unsynced copy in page cache is no better than the tmpfs original
+            sync -- "$DEST" 2>/dev/null
+    fi
+    sleep 1
+done

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Switch EasyEffects speaker profiles / bypass. Usage: speaker {music|movies|off|on|status}
+case "$1" in
+  music)        easyeffects -l "Cupertino Laptop Speakers"; echo "-> Music (full enhancement)";;
+  movies|voice) easyeffects -l "Movies & Voice"; echo "-> Movies & Voice (dialogue-forward, gentler)";;
+  off)          easyeffects -b 1; echo "-> effects BYPASSED (raw speakers)";;
+  on)           easyeffects -b 2; echo "-> effects ON";;
+  status|"")    easyeffects -s;;
+  *)            echo "usage: speaker {music|movies|off|on|status}";;
+esac
