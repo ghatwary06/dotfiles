@@ -6,6 +6,12 @@ laptop driving a second 1080p144 monitor.
 The bar and the side panel are the parts I actually care about — most of the work
 in here is a hand-written Quickshell shell, not a theme drop.
 
+![the desktop](preview-dashboard.png)
+
+<p align="center">
+  <img src="preview-panel.png" width="330" alt="the side panel">
+</p>
+
 ## what's in here
 
 | | |
@@ -97,6 +103,27 @@ Missing tools make a widget go blank rather than break the shell:
 
 DDC/CI needs the `i2c-dev` module loaded and your user in the `i2c` group,
 otherwise the external-monitor brightness slider hides itself.
+
+## before you copy the chat tab
+
+`quickshell/panel/chat.sh` runs the **Claude Code CLI with `--permission-mode auto`
+and full tool access** — Bash, Write, Edit, the lot. That is deliberate: a panel
+has nowhere to draw an approval dialog, so `manual` would just hang forever.
+
+What it means in practice: anything that can talk to this Quickshell instance's
+IPC socket can make the agent run commands as you. That socket lives under
+`$XDG_RUNTIME_DIR`, which is `0700` and yours alone, so on a single-user machine
+the blast radius is the same as any terminal you already have open. It is still
+the sharpest thing in this repo, and worth knowing before you paste it onto a
+shared or multi-user box.
+
+MCP servers are switched off for this surface on purpose (`--strict-mcp-config`)
+— the connectors reach off the machine, and a quick-question box is not the
+place for that. Delete the line if you disagree.
+
+Nothing else here needs privileges: `powerctl.sh` writes only through a fixed
+whitelist of `asusctl`/`powerprofilesctl` targets and refuses `gpu_mux_mode` and
+`dgpu_disable` outright, and no script in this repo calls `sudo`.
 
 ## notes
 

@@ -273,7 +273,11 @@ Singleton {
             return false;
         killer.pid = pid;
         killer.action = "reniced";
-        killer.command = ["sh", "-c", "renice -n " + delta + " -p " + pid + " >/dev/null 2>&1"];
+        // argv form, no shell: every other process action already execs
+        // directly, and this was the one place a value was pasted into a
+        // command STRING. Both values are numeric today, so nothing was
+        // exploitable — but the shape is what matters, not today's inputs.
+        killer.command = ["renice", "-n", String(Math.trunc(delta)), "-p", String(Math.trunc(pid))];
         killer.running = true;
         return true;
     }
