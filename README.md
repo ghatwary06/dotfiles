@@ -23,7 +23,7 @@ in here is a hand-written Quickshell shell, not a theme drop.
 | **Terminal** | Kitty |
 | **Shell** | fish |
 | **Launcher / menus** | Rofi |
-| **Notifications** | Quickshell (owns `org.freedesktop.Notifications`) |
+| **Notifications** | Quickshell |
 | **Editor** | Neovim (LazyVim) |
 | **Fetch** | Fastfetch |
 | **Theme** | Nord — accent `nord8` `#88C0D0` |
@@ -66,7 +66,7 @@ Everything below is `SUPER` unless noted.
 | `W` | wallpaper picker |
 | `L` | lock (hyprlock) |
 | `SHIFT+S` | region screenshot |
-| `ALT+S` | **delayed** screenshot — for menus and hover states that vanish when you reach for the mouse |
+| `ALT+S` | delayed screenshot — for menus that vanish when you reach for the mouse |
 | `SUPER + brightness keys` | external monitor brightness over DDC/CI |
 | `Alt+Shift` | switch US ⇄ Arabic keyboard layout |
 
@@ -104,36 +104,18 @@ Missing tools make a widget go blank rather than break the shell:
 DDC/CI needs the `i2c-dev` module loaded and your user in the `i2c` group,
 otherwise the external-monitor brightness slider hides itself.
 
-## before you copy the chat tab
-
-`quickshell/panel/chat.sh` runs the **Claude Code CLI with `--permission-mode auto`
-and full tool access** — Bash, Write, Edit, the lot. That is deliberate: a panel
-has nowhere to draw an approval dialog, so `manual` would just hang forever.
-
-What it means in practice: anything that can talk to this Quickshell instance's
-IPC socket can make the agent run commands as you. That socket lives under
-`$XDG_RUNTIME_DIR`, which is `0700` and yours alone, so on a single-user machine
-the blast radius is the same as any terminal you already have open. It is still
-the sharpest thing in this repo, and worth knowing before you paste it onto a
-shared or multi-user box.
-
-MCP servers are switched off for this surface on purpose (`--strict-mcp-config`)
-— the connectors reach off the machine, and a quick-question box is not the
-place for that. Delete the line if you disagree.
-
-Nothing else here needs privileges: `powerctl.sh` writes only through a fixed
-whitelist of `asusctl`/`powerprofilesctl` targets and refuses `gpu_mux_mode` and
-`dgpu_disable` outright, and no script in this repo calls `sudo`.
+> **Heads up on the chat tab.** `panel/chat.sh` runs the Claude Code CLI with
+> `--permission-mode auto` and full tool access, because a panel has nowhere to
+> draw an approval dialog. On a single-user machine that's the same reach as a
+> terminal you already have open — but don't put it on a shared box.
 
 ## notes
 
 **Hyprland is configured in Lua.** `hyprland.lua` + `rice.lua` are the live
-config; the matching `.conf` files are kept as a rollback and are deliberately
-in sync. `hyprctl dispatch` takes Lua expressions in this setup.
+config; the matching `.conf` files are kept as a tested rollback.
 
 **Multi-GPU.** `AQ_DRM_DEVICES` is resolved at launch from PCI paths rather than
 hardcoded to `/dev/dri/cardN` — those numbers get reshuffled by kernel upgrades,
 and a stale one means the external monitor silently never comes up.
 
-`sync.sh` copies the live config on this machine back into the repo. It works off
-an explicit allowlist, so nothing from `~/.config` can wander in by accident.
+`sync.sh` copies the live config on this machine back into the repo.
